@@ -1,4 +1,5 @@
 import { getData, setData } from "../helpers/fileData.js";
+import  sendEmailMessage  from "../helpers/mailer.js";
 
 class Userscontroller {
 
@@ -52,12 +53,16 @@ class Userscontroller {
     async create(req, res){
         try{
         const items=await getData('users.json');
+        const {name, email} = req.body;
         const newItem={
         ...req.body,
         id: items.length ? items.at(-1).id + 1 : 1
-}
+}       
+        await sendEmailMessage(email, name)
+
         items.push(newItem)
-await setData('users.json', items)
+        await setData('users.json', items)
+        
         return res.status(201).json({
         success: true,
         message: "foydalanuvchi muvaffaqiyatli qo'shildi",
